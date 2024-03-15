@@ -7,18 +7,20 @@ Just run this software, change to your browser where you are following your reci
 
 ## How to scroll magically
 1. Create a python virtual environment
-python -m venv ./venv
+```python -m venv ./venv```
 2. Activate the python virtual environment. Run:
-./venv/Scripts/activate
+```./venv/Scripts/activate```
 3. Install the required packages on the venv 
-pip install -r /path/to/requirements.txt
+```pip install -r /path/to/requirements.txt```
 4. Happily run the main file
-python ./main.py
+```python ./main.py```
 5. Change to the page you want to scroll up and down, change tabs and start magically controling your pc hands free!
 
 ## Gesture list:
-1. Thumb Up   : Scrolls up
-2. Thumb Down : Scrolls down
-3. Open Palm  : Changes to next tab
-4. Closed Fist: Changes to previous tab
-5. V          : Exit software
+| Gesture     | Description             |
+|-------------|-------------------------|
+| Thumb Up    | Scrolls up              |
+| Thumb Down  | Scrolls down            |
+| Open Palm   | Changes to next tab     |
+| Closed Fist | Changes to previous tab |
+| V           | Exit software           |
