@@ -1,58 +1,69 @@
 import cv2
+import os
+import time
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
-import os
 from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.mouse import Controller as MouseController
 
-import time
+MODEL_PATH = os.getcwd() + '\model\gesture_recognizer.task'
 
-mouse = MouseController()
-keyboard = KeyboardController()
+def scroll_down(mouse, number_of_lines):
+    mouse.scroll(0, -number_of_lines)
 
-model_path = os.getcwd() + '\model\gesture_recognizer.task'
-print(model_path)
+def scroll_up(mouse, number_of_lines):
+    mouse.scroll(0, number_of_lines)
 
-base_options = python.BaseOptions(model_asset_path=model_path)
-options = vision.GestureRecognizerOptions(base_options=base_options)
-recognizer = vision.GestureRecognizer.create_from_options(options)
-    
-cam = cv2.VideoCapture(0)
-while True:
-    time.sleep(0.2)
-    result, image = cam.read()
+def next_tab(keyboard):
+    keyboard.press(Key.ctrl)
+    keyboard.press(Key.tab)
+    keyboard.release(Key.ctrl)
+    keyboard.release(Key.tab)
 
-    if result:
-        # save the image
-        cv2.imwrite("teste.png", image)
-        new_image = mp.Image.create_from_file("teste.png")
-        # show the image
-        recognition_result = recognizer.recognize(new_image)
-        if recognition_result.gestures:
-            gesture = recognition_result.gestures[0][0].category_name
-            print(gesture)
-            if gesture == 'Thumb_Up':
-                mouse.scroll(0, 2)
-            elif gesture == 'Thumb_Down':
-                mouse.scroll(0, -2)
-            elif gesture == 'Open_Palm':
-                keyboard.press(Key.ctrl)
-                keyboard.press(Key.tab)
-                keyboard.release(Key.ctrl)
-                keyboard.release(Key.tab)
-            elif gesture == 'Closed_Fist':
-                keyboard.press(Key.ctrl)
-                keyboard.press(Key.shift)
-                keyboard.press(Key.tab)
-                keyboard.release(Key.ctrl)
-                keyboard.release(Key.shift)
-                keyboard.release(Key.tab)
-            elif gesture == 'Victory':
-                break
+def previous_tab(keyboard):
+    keyboard.press(Key.ctrl)
+    keyboard.press(Key.shift)
+    keyboard.press(Key.tab)
+    keyboard.release(Key.ctrl)
+    keyboard.release(Key.shift)
+    keyboard.release(Key.tab)
 
-    # If captured image is corrupted, moving to else part 
-    else: 
-        print("No image detected. Please! try again") 
+if __name__ == "__main__":
+    mouse = MouseController()
+    keyboard = KeyboardController()
 
-print("babai")
+    base_options = python.BaseOptions(model_asset_path=MODEL_PATH)
+    options = vision.GestureRecognizerOptions(base_options=base_options)
+    recognizer = vision.GestureRecognizer.create_from_options(options)
+        
+    cam = cv2.VideoCapture(0)
+    while True:
+        time.sleep(0.2)
+        result, image = cam.read()
+
+        if result:
+            # save the image
+            cv2.imwrite("teste.png", image)
+            new_image = mp.Image.create_from_file("teste.png")
+            # show the image
+            recognition_result = recognizer.recognize(new_image)
+            if recognition_result.gestures:
+                gesture = recognition_result.gestures[0][0].category_name
+                print(gesture)
+                if gesture == 'Thumb_Up':
+                    scroll_up(mouse, 2)
+                elif gesture == 'Thumb_Down':
+                    scroll_down(mouse, 2)
+                elif gesture == 'Open_Palm':
+                    next_tab(keyboard)
+                elif gesture == 'Closed_Fist':
+                    previous_tab(keyboard)
+                elif gesture == 'Victory':
+                    break
+
+        # If captured image is corrupted, moving to else part 
+        else: 
+            print("No image detected. Please! try again") 
+
+    print("babai")
